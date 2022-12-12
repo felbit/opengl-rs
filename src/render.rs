@@ -1,6 +1,6 @@
 extern crate gl;
 
-use gl::types::{GLenum, GLint, GLuint};
+use gl::types::{GLchar, GLenum, GLint, GLuint};
 use std::ffi::{CStr, CString};
 
 pub struct Program {
@@ -19,7 +19,31 @@ impl Program {
             gl::LinkProgram(program_id);
         }
 
-        // TODO: Error handling here!
+        // :: ERROR HANDLING ::
+        let mut success: GLint = 1;
+        unsafe {
+            gl::GetProgramiv(program_id, gl::LINK_STATUS, &mut success);
+        }
+
+        if success == 0 {
+            let mut len: GLint = 0;
+            unsafe {
+                gl::GetProgramiv(program_id, gl::INFO_LOG_LENGTH, &mut len);
+            }
+
+            let error = create_cstring_buffer(len as usize);
+
+            unsafe {
+                gl::GetProgramInfoLog(
+                    program_id,
+                    len,
+                    std::ptr::null_mut(),
+                    error.as_ptr() as *mut GLchar,
+                );
+            }
+
+            return Err(error.to_string_lossy().into_owned());
+        }
 
         for shader in shaders {
             unsafe {
@@ -32,6 +56,12 @@ impl Program {
 
     pub fn id(&self) -> GLuint {
         self.id
+    }
+
+    pub fn use_program(&self) {
+        unsafe {
+            gl::UseProgram(self.id);
+        }
     }
 }
 
