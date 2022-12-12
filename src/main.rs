@@ -4,6 +4,7 @@ extern crate gl;
 extern crate sdl2; // TODO: Replace sdl2 with winit and try to achieve the same result!
 
 pub mod render;
+pub mod resources;
 
 fn main() {
     let sdl = sdl2::init().unwrap();

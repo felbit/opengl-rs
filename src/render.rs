@@ -1,3 +1,4 @@
+use crate::resources::Resources;
 use gl;
 use gl::types::{GLchar, GLenum, GLint, GLuint};
 use std::ffi::{CStr, CString};
@@ -82,6 +83,23 @@ pub struct Shader {
 }
 
 impl Shader {
+    pub fn from_resource(gl: &gl::Gl, resource: &Resources, name: &str) -> Result<Shader, String> {
+        const POSSIBLE_EXT: [(&str, GLenum); 2] =
+            [(".vert", gl::VERTEX_SHADER), (".frag", gl::FRAGMENT_SHADER)];
+
+        let shader_kind = POSSIBLE_EXT
+            .iter()
+            .find(|&&(file_extension, _)| name.ends_with(file_extension))
+            .map(|&(_, kind)| kind)
+            .ok_or_else(|| format!("cannot determine shader type for resource {}", name))?;
+
+        let source = resource
+            .load_cstring(name)
+            .map_err(|e| format!("Error loading resource {}: {:?}", name, e))?;
+
+        Shader::from_source(gl, &source, shader_kind)
+    }
+
     pub fn from_source(gl: &gl::Gl, source: &CStr, kind: GLenum) -> Result<Shader, String> {
         let id = shader_from_source(gl, source, kind)?;
         Ok(Shader { gl: gl.clone(), id })
