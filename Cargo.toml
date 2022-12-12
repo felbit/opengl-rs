@@ -4,10 +4,11 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
-gl = "0.14.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+gl = { path = "lib/gl", version = "0.1.0" }
 
 [dependencies.sdl2]
 version = "0.35.2"
 features = ["bundled", "static-link"]
+
+[features]
+gl_debug = ["gl/debug"]
