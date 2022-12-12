@@ -70,9 +70,9 @@ fn main() {
             std::ptr::null(), // offset of the first component
         );
 
-        gl::EnableVertexAttribArray(1); // layout (location = 0)
+        gl::EnableVertexAttribArray(1); // layout (location = 1)
         gl::VertexAttribPointer(
-            1,         // index of the vertex attribute ("layout (location = 0)")
+            1,         // index of the vertex attribute ("layout (location = 1)")
             3,         // number of components per vertex attribute
             gl::FLOAT, // data type
             gl::FALSE, // normalized? (int-to-float conversation)
