@@ -1,9 +1,6 @@
 //! src/main.rs
 
-// TODO: Replace sdl2 with winit and
-// try to achieve the same result!
-
-extern crate sdl2;
+extern crate sdl2; // TODO: Replace sdl2 with winit and try to achieve the same result!
 
 pub mod render;
 
@@ -23,8 +20,7 @@ fn main() {
         .unwrap();
 
     let _gl_context = window.gl_create_context().unwrap();
-    let _gl =
-        gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as *const std::os::raw::c_void);
+    gl::load_with(|s| video_subsystem.gl_get_proc_address(s) as *const std::os::raw::c_void);
 
     unsafe {
         gl::Viewport(0, 0, 800, 600);
@@ -32,9 +28,10 @@ fn main() {
     }
 
     let vertices: Vec<f32> = vec![
-        -0.5, -0.5, 0.0, // low left
-        0.5, -0.5, 0.0, // low right
-        0.0, 0.5, 0.0, // up middle
+        // position       // color
+        -0.5, -0.5, 0.0, 1.0, 0.0, 0.0, // low left
+        0.5, -0.5, 0.0, 0.0, 1.0, 0.0, // low right
+        0.0, 0.5, 0.0, 0.0, 0.0, 1.0, // up middle
     ];
 
     let mut vbo: gl::types::GLuint = 0;
@@ -69,8 +66,18 @@ fn main() {
             3,         // number of components per vertex attribute
             gl::FLOAT, // data type
             gl::FALSE, // normalized? (int-to-float conversation)
-            (3 * std::mem::size_of::<f32>()) as gl::types::GLint, // stride
+            (6 * std::mem::size_of::<f32>()) as gl::types::GLint, // stride
             std::ptr::null(), // offset of the first component
+        );
+
+        gl::EnableVertexAttribArray(1); // layout (location = 0)
+        gl::VertexAttribPointer(
+            1,         // index of the vertex attribute ("layout (location = 0)")
+            3,         // number of components per vertex attribute
+            gl::FLOAT, // data type
+            gl::FALSE, // normalized? (int-to-float conversation)
+            (6 * std::mem::size_of::<f32>()) as gl::types::GLint, // stride
+            (3 * std::mem::size_of::<f32>()) as *const gl::types::GLvoid, // offset
         );
 
         gl::BindBuffer(gl::ARRAY_BUFFER, 0); // unbind array buffer
